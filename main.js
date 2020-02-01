@@ -21,25 +21,14 @@ var ctxData;
 
 var tipText = "Loading...";
 
-var playpal = [[]];
-for(var i = 0; i < 256; i++) playpal[0][i] = [i, i, i];
-var playpalCurrent = 0;
-var playpalOld = 1;
-var patches = [];
+var palettes = null;
+
 var frame = 0;
 var dt_fps = 0;
 var dt_ms = 0;
 
 var flashing = false; //DEBUG
 var fast = false;
-
-function getPalette(i)
-{
-	if(playpal[playpalCurrent])
-		return playpal[playpalCurrent][i];
-	else
-		return playpal[0][i];
-}
 
 function loadFile()
 {
@@ -59,21 +48,24 @@ function loadFile()
 			oldBuffer[x][y] = 1;
 		}
 	}
+
 	if(canvas.getContext)
 	{
 		ctx = canvas.getContext("2d");
 		ctxData = ctx.getImageData(0, 0, cwidth, cheight);
 	}
-	var reader = new FileReader();
-    reader.onload = function(){
-		console.log("Loading WAD data...")
-		var data = reader.result;
-		wad = new WAD(data);
+
+    var wadFile = document.getElementsByName("iwad")[0].files[0];
+
+    var launch = function() {
+        palettes = new Palettes(wad);
+
 		setTimeout(run, 0, performance.now())
+
 		console.log("Started loop")
-    };
-	console.log("Reading file")
-    reader.readAsArrayBuffer(document.getElementsByName("iwad")[0].files[0]);
+    }
+
+    wad = new WAD(wadFile, launch);
 }
 
 function setShown(e, loadMsg)
@@ -89,16 +81,6 @@ function setShown(e, loadMsg)
 	}
 }
 
-function precachePatch(lump)
-{
-	if(!patches[lump] && wad)
-	{
-		var l = wad.getFirstLump(lump);
-		if(l) patches[lump] = new Patch(l);
-	}
-	return patches[lump];
-}
-
 function drawPixel(color, x, y)
 {
 	if(useBuffer)
@@ -107,7 +89,7 @@ function drawPixel(color, x, y)
 	}
 	else
 	{
-		ctx.fillStyle = "rgb(" + getPalette(color)[0] + ", " + getPalette(color)[1] + ", " + getPalette(color)[2] + ")";
+		ctx.fillStyle = "rgb(" + palettes.get(color)[0] + ", " + palettes.get(color)[1] + ", " + palettes.get(color)[2] + ")";
 		ctx.fillRect(x,y,1,1);
 	}
 }
@@ -148,20 +130,22 @@ function drawText(text, x, y)
 
 function drawPatch(patch, x, y)
 {
-	var p = precachePatch(patch);
-	if(p)
-	{
-		for(var w = 0; w < p.width; w++)
-		{
-			for(var h = 0; h < p.height; h++)
-			{
-				if(p.img[w][h] >= 0)
-				{
-					drawPixel(p.img[w][h],x+w-p.xOffset,y+h-p.yOffset)
-				}
-			}
-		}
-	}
+    var p = wad.patch(patch);
+
+	if(! p)
+        return null;
+
+    for(var w = 0; w < p.width; w++)
+    {
+        for(var h = 0; h < p.height; h++)
+        {
+            if(p.img[w][h] >= 0)
+            {
+                drawPixel(p.img[w][h], x + w - p.xOffset,y+h-p.yOffset)
+            }
+        }
+    }
+
 	return p;
 }
 function run(dt)
@@ -186,19 +170,12 @@ function update()
 {
 	frame++;
 	tipText = "fps: " + dt_fps.toFixed(2) + "\nms: " + dt_ms.toFixed(2);
+
 	if(flashing)
-	{
-		if(playpalCurrent > 9) playpalCurrent --; //DEBUG STUFF
-		else
-		{
-			if(frame % fps === 0) playpalCurrent = 12;
-			else playpalCurrent = 0;
-		}
-	}	
+        palettes.flash(frame / fps);
+
 	if(frame == 175)
-	{
 		wipe.startWiping();
-	}
 }
 function draw()
 {
@@ -207,32 +184,34 @@ function draw()
 }
 function applyBuffer()
 {
-	if(useBuffer)
-	{
-		for(var x = 0; x < width; x++)
-		{
-			for(var y = 0; y < height; y++)
-			{
-				var c = (x+(y*cwidth))*4;
-				if(playpalCurrent != playpalOld || screenBuffer[x][y] != oldBuffer[x][y])
-				{
-					ctxData.data[c] = getPalette(screenBuffer[x][y])[0];
-					ctxData.data[c+1] = getPalette(screenBuffer[x][y])[1];
-					ctxData.data[c+2] = getPalette(screenBuffer[x][y])[2];
-					ctxData.data[c+3] = 255;
-					/*ctx.fillStyle = "rgb(" + getPalette(screenBuffer[x][y])[0] + ", " + getPalette(screenBuffer[x][y])[1] + ", " + getPalette(screenBuffer[x][y])[2] + ")";
-					ctx.fillRect(x*swidth,y*sheight,swidth,sheight);*/
-				}
-			}
-		}
-		ctx.putImageData(ctxData, 0, 0);
-		oldBuffer = [];
-		for(var x = 0; x < width; x++)
-		{
-			oldBuffer[x] = screenBuffer[x].slice();
-		}
-		playpalOld = playpalCurrent;
-	}
+    if(! useBuffer)
+        return;
+
+    for(var x = 0; x < width; x++)
+    {
+        for(var y = 0; y < height; y++)
+        {
+            var c = (x+(y*cwidth))*4;
+            if((! palettes.currentIsOld()) || screenBuffer[x][y] != oldBuffer[x][y])
+            {
+                ctxData.data[c] = palettes.get(screenBuffer[x][y])[0];
+                ctxData.data[c+1] = palettes.get(screenBuffer[x][y])[1];
+                ctxData.data[c+2] = palettes.get(screenBuffer[x][y])[2];
+                ctxData.data[c+3] = 255;
+                /*ctx.fillStyle = "rgb(" + palettes.get(screenBuffer[x][y])[0] + ", " + palettes.get(screenBuffer[x][y])[1] + ", " + palettes.get(screenBuffer[x][y])[2] + ")";
+                    ctx.fillRect(x*swidth,y*sheight,swidth,sheight);*/
+            }
+        }
+    }
+
+    ctx.putImageData(ctxData, 0, 0);
+
+    oldBuffer = [];
+
+    for(var x = 0; x < width; x++)
+        oldBuffer[x] = screenBuffer[x].slice();
+
+    palettes.updateOld();
 }
 
 setShown("wad-selection");
