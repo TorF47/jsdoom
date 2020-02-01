@@ -83,15 +83,19 @@ function setShown(e, loadMsg)
 
 function drawPixel(color, x, y)
 {
-	if(useBuffer)
-	{
-		screenBuffer[x][y] = color;
-	}
-	else
-	{
-		ctx.fillStyle = "rgb(" + palettes.get(color)[0] + ", " + palettes.get(color)[1] + ", " + palettes.get(color)[2] + ")";
-		ctx.fillRect(x,y,1,1);
-	}
+    if (x < 0 || x >= width)
+        return;
+
+    if (y < 0 || y >= height)
+        return;
+
+    if(useBuffer)
+        screenBuffer[x][y] = color;
+    else
+    {
+        ctx.fillStyle = "rgb(" + palettes.get(color)[0] + ", " + palettes.get(color)[1] + ", " + palettes.get(color)[2] + ")";
+        ctx.fillRect(x,y,1,1);
+    }
 }
 
 function drawText(text, x, y)
@@ -159,44 +163,47 @@ function run(dt)
 		update();
 		draw();
 	}
+
 	if(wipe.gonnaWipe)
 	{
 		wipe.wipe();
 	}
+	drawText("fps: " + dt_fps.toFixed(2) + "\nms: " + dt_ms.toFixed(2), 0, 186);
 	applyBuffer();
 	if(fast) setTimeout(run, 0, [dt_now]);
 }
 function update()
 {
 	frame++;
-	tipText = "fps: " + dt_fps.toFixed(2) + "\nms: " + dt_ms.toFixed(2);
 
 	if(flashing)
-        palettes.flash(frame / fps);
+        palettes.flash(frame % fps);
 
-	if(frame == 175)
-		wipe.startWiping();
+	gamestates[gamestate].update();
 }
 function draw()
 {
-	drawPatch(frame < 175 ? "TITLEPIC" : "CREDIT", 0, 0);
-	drawText(tipText, 0, 0);
+	gamestates[gamestate].draw();
 }
 function applyBuffer()
 {
     if(! useBuffer)
         return;
 
+    var paletteChange = ! palettes.currentIsOld();
+
     for(var x = 0; x < width; x++)
     {
         for(var y = 0; y < height; y++)
         {
-            var c = (x+(y*cwidth))*4;
-            if((! palettes.currentIsOld()) || screenBuffer[x][y] != oldBuffer[x][y])
+            if(paletteChange || screenBuffer[x][y] != oldBuffer[x][y])
             {
-                ctxData.data[c] = palettes.get(screenBuffer[x][y])[0];
-                ctxData.data[c+1] = palettes.get(screenBuffer[x][y])[1];
-                ctxData.data[c+2] = palettes.get(screenBuffer[x][y])[2];
+                var rgb = palettes.get(screenBuffer[x][y]);
+                var c = (x+(y*cwidth))*4;
+
+                ctxData.data[c] = rgb[0];
+                ctxData.data[c+1] = rgb[1];
+                ctxData.data[c+2] = rgb[2];
                 ctxData.data[c+3] = 255;
                 /*ctx.fillStyle = "rgb(" + palettes.get(screenBuffer[x][y])[0] + ", " + palettes.get(screenBuffer[x][y])[1] + ", " + palettes.get(screenBuffer[x][y])[2] + ")";
                     ctx.fillRect(x*swidth,y*sheight,swidth,sheight);*/
