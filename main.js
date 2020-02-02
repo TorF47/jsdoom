@@ -31,6 +31,16 @@ var dt_ms = 0;
 var flashing = false; //DEBUG
 var fast = false;
 
+var gamemode = "indetermined";
+
+function getPalette(i)
+{
+	if(playpal[playpalCurrent])
+		return playpal[playpalCurrent][i];
+	else
+		return playpal[0][i];
+}
+
 function loadFile()
 {
 	setShown("game");
@@ -65,12 +75,21 @@ function loadFile()
 
 function init()
 {
+    if(wad.lumpByName("MAP02")) //map01 may be missing
+        gamemode = "commercial";
+    else if(! wad.lumpByName("E2M1"))
+        gamemode = "shareware";
+    else if(! wad.lumpByName("E4M1"))
+        gamemode = "registered";
+    else
+        gamemode = "retail";
+
     palettes = new Palettes(wad);
 
-	setTimeout(run, 0, performance.now());
-	console.log("Started loop");
-	
-	menu.init();
+    setTimeout(run, 0, performance.now());
+    console.log("Started loop");
+
+    menu.init();
 }
 
 function setShown(e, loadMsg)
