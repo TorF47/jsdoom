@@ -78,11 +78,11 @@ menu.draw = function()
 			{
 				if(c.menuitems[i].name)
 				{
-					drawPatch(c.menuitems[i].name, x, y);
+					canvas.drawPatch(c.menuitems[i].name, x, y);
 				}
 				y += 16;
 			}
-			drawPatch(skullName[whichSkull], x-32, c.y - 5 + itemOn*16);
+			canvas.drawPatch(skullName[whichSkull], x-32, c.y - 5 + itemOn*16);
 		}
 	}
 }
@@ -157,7 +157,7 @@ menu["mainmenu"] = new Menu(
 	],
 	function()
 	{
-		drawPatch("M_DOOM", 92, 2);
+		canvas.drawPatch("M_DOOM", 92, 2);
 	},
 	97, 64,
 	0
@@ -186,7 +186,7 @@ menu["episode"] = new Menu(
 	],
 	function()
 	{
-		drawPatch("M_EPISOD", 54, 38);
+		canvas.drawPatch("M_EPISOD", 54, 38);
 	},
 	48, 63,
 	0
@@ -204,8 +204,8 @@ menu["newgame"] = new Menu(
 	],
 	function()
 	{
-		drawPatch("M_NEWG", 96, 14);
-		drawPatch("M_SKILL", 54, 38);
+		canvas.drawPatch("M_NEWG", 96, 14);
+		canvas.drawPatch("M_SKILL", 54, 38);
 	},
 	48, 63,
 	2

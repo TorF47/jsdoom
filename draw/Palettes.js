@@ -50,16 +50,16 @@ class Palettes
     }
 
     /**
-     * Return the specified palette.
+     * Return RGB of the current palette.
      * @param {int} Palette index.
-     * @return {...}
+     * @return [{int, int, int]} RGB
      **/
-    get(i)
+    get(color)
     {
         if(this.data[this.current])
-            return this.data[this.current][i];
+            return this.data[this.current][color];
 
-        return this.data[0][i];
+        return this.data[0][color];
     }
 
     /**
@@ -95,4 +95,19 @@ class Palettes
     {
         this.old = this.current;
     }
+
+    /**
+     * Return RGB description of the specified color.
+     * @param {int} color
+     * @return {string}
+     **/
+    rgb(color)
+    {
+        var palette = this.get(color);
+
+        var rgb = "rgb(" + palette[0] + ", " + palette[1] + ", " + palette[2] + ")";
+
+        return rgb;
+    }
+
 }
