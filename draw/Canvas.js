@@ -58,7 +58,7 @@ class Canvas
             this.screenBuffer[x][y] = color;
         else
         {
-            var rgb = palettes.rgb(color);
+            var rgb = jsDoom.palettes.rgb(color);
 
             this.ctx.fillStyle = rgb;
 
@@ -74,7 +74,7 @@ class Canvas
         if(! this.useBuffer)
             return;
 
-        var paletteChange = ! palettes.currentIsOld();
+        var paletteChange = ! jsDoom.palettes.currentIsOld();
 
         for(var x = 0; x < this.width; x++)
         {
@@ -82,14 +82,14 @@ class Canvas
             {
                 if(paletteChange || this.screenBuffer[x][y] != this.oldBuffer[x][y])
                 {
-                    var rgb = palettes.get(this.screenBuffer[x][y]);
+                    var rgb = jsDoom.palettes.get(this.screenBuffer[x][y]);
                     var c = (x + (y * this.cwidth)) * 4;
 
                     this.ctxData.data[c] = rgb[0];
                     this.ctxData.data[c+1] = rgb[1];
                     this.ctxData.data[c+2] = rgb[2];
                     this.ctxData.data[c+3] = 255;
-                    /*this.ctx.fillStyle = "rgb(" + palettes.get(this.screenBuffer[x][y])[0] + ", " + palettes.get(this.screenBuffer[x][y])[1] + ", " + palettes.get(this.screenBuffer[x][y])[2] + ")";
+                    /*this.ctx.fillStyle = "rgb(" + jsDoom.palettes.get(this.screenBuffer[x][y])[0] + ", " + jsDoom.palettes.get(this.screenBuffer[x][y])[1] + ", " + jsDoom.palettes.get(this.screenBuffer[x][y])[2] + ")";
                     this.ctx.fillRect(x*this.swidth,y*this.sheight,this.swidth,this.sheight);*/
                 }
             }
@@ -102,7 +102,7 @@ class Canvas
         for(var x = 0; x < this.width; x++)
             this.oldBuffer[x] = this.screenBuffer[x].slice();
 
-        palettes.updateOld();
+        jsDoom.palettes.updateOld();
     }
 
     /**
@@ -165,7 +165,7 @@ class Canvas
      **/
     drawPatch(name, x, y)
     {
-        var p = wad.patch(name);
+        var p = jsDoom.wad.patch(name);
 
         if(! p)
             return null;

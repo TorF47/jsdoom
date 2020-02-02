@@ -14,7 +14,7 @@
 			<label>PWAD(s)</label>
 			<input type="file" name="pwad" accept=".wad" multiple/>
 			<br/>
-			<button type="button" onclick="setTimeout(loadFile(),0)">Play!</button>
+			<button type="button" onclick="setTimeout(jsDoom.launch(),0)">Play!</button>
 		</div>
 		<div id="loading">
 			<p id="loading-p">Loading code... If this takes too long, make sure that Javascript isn't disabled. I thought this was common sense.</p>
@@ -23,18 +23,19 @@
 			<canvas id="jsdoom-canvas" width="320" height="200">Uh oh, your browser has Javascript disabled, or is too old. Fix that in order to play.</canvas>
 		</div>
 		
-		<script type="text/javascript" src="font.js"></script>
-		<script type="text/javascript" src="englsh.js"></script>
+		<script type="text/javascript" src="core.js"></script>
+		<script type="text/javascript" src="gamestate.js"></script>
+		<script type="text/javascript" src="main.js"></script>
+		<script type="text/javascript" src="random.js"></script>
 		<script type="text/javascript" src="draw/Canvas.js"></script>
 		<script type="text/javascript" src="draw/Palettes.js"></script>
 		<script type="text/javascript" src="draw/Wipe.js"></script>
+		<script type="text/javascript" src="ui/englsh.js"></script>
+		<script type="text/javascript" src="ui/font.js"></script>
+		<script type="text/javascript" src="ui/menu.js"></script>
+		<script type="text/javascript" src="ui/title.js"></script>
 		<script type="text/javascript" src="wad/Lump.js"></script>
 		<script type="text/javascript" src="wad/Patch.js"></script>
 		<script type="text/javascript" src="wad/Wad.js"></script>
-		<script type="text/javascript" src="random.js"></script>
-		<script type="text/javascript" src="gamestate.js"></script>
-		<script type="text/javascript" src="title.js"></script>
-		<script type="text/javascript" src="main.js"></script>
-		<script type="text/javascript" src="menu.js"></script>
 	</body>
 </html>

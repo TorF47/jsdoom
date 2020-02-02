@@ -43,16 +43,16 @@ class Wipe
      **/
     wipe()
     {
-        var w = WIDTH/2;
+        var w = jsDoom.WIDTH/2;
 
         if(! this.wiping)
         {
             this.wiping = true;
 
-            for(var x = 0; x < WIDTH; x++)
+            for(var x = 0; x < jsDoom.WIDTH; x++)
             {
-                this.startScreen[x] = canvas.oldBuffer[x].slice();
-                this.endScreen[x] = canvas.screenBuffer[x].slice();
+                this.startScreen[x] = jsDoom.canvas.oldBuffer[x].slice();
+                this.endScreen[x] = jsDoom.canvas.screenBuffer[x].slice();
             }
 
             this.columns[0] = -(M_Random() % 16);
@@ -79,27 +79,27 @@ class Wipe
                 nothing = false;
                 this.columns[x]++;
 
-                for(var y = 0 ; y < HEIGHT ; y++)
+                for(var y = 0 ; y < jsDoom.HEIGHT ; y++)
                     for(var T = 0; T <= 1; T++)
                     {
                         var bufX = (x * 2) + T;
 
-                        canvas.screenBuffer[bufX][y] = this.startScreen[bufX][y];
+                        jsDoom.canvas.screenBuffer[bufX][y] = this.startScreen[bufX][y];
                     }
             }
             else if(this.columns[x] >= 0)
             {
-                if(this.columns[x] < HEIGHT)
+                if(this.columns[x] < jsDoom.HEIGHT)
                     nothing = false;
 
                 var dy = (this.columns[x] < 16) ? this.columns[x] + 1 : 8;
 
-                if(this.columns[x] + dy >= HEIGHT)
-                    dy = HEIGHT - this.columns[x];
+                if(this.columns[x] + dy >= jsDoom.HEIGHT)
+                    dy = jsDoom.HEIGHT - this.columns[x];
 
                 this.columns[x] += dy;
 
-                for(var y = 0 ; y < HEIGHT ; y++)
+                for(var y = 0 ; y < jsDoom.HEIGHT ; y++)
                     for(var T = 0; T <= 1; T++)
                     {
                         var bufX = (x * 2) + T;
@@ -110,7 +110,7 @@ class Wipe
                         else
                             color = this.startScreen[bufX][y - this.columns[x]];
 
-                        canvas.screenBuffer[bufX][y] = color;
+                        jsDoom.canvas.screenBuffer[bufX][y] = color;
                     }
             }
         }

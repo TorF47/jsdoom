@@ -8,7 +8,7 @@ function changeState(state, isTitle, ...args)
 	{
 		gamestate = state;
 		gamestates[state].changedTo(...args);
-		wipe.startWiping();
+		jsDoom.wipe.startWiping();
 		console.log("Switching to state \"" + state + "\"");
 		title = isTitle;
 	}

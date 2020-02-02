@@ -112,4 +112,22 @@ class WAD
 
         return lump.getPatch();
     }
+
+    /**
+     * Return wad gamemode.
+     * @return {string}
+     **/
+    gamemode()
+    {
+        if(this.lumpByName("MAP02")) //map01 may be missing
+            return "commercial";
+
+        if(! this.lumpByName("E2M1"))
+            return "shareware";
+
+        if(! this.lumpByName("E4M1"))
+            return "registered";
+
+        return "retail";
+    }
 }
