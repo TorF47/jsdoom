@@ -62,13 +62,13 @@ class Core
 
         gamestates[gamestate].update();
 
-        menu.update();
+        jsDoom.menus.update();
     }
 
     draw()
     {
         gamestates[gamestate].draw();
 
-        menu.draw();
+        jsDoom.menus.draw();
     }
 }

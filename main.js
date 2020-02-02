@@ -13,6 +13,7 @@ class JSDoom
         // Main objects.
         this.canvas = null;
         this.core = null;
+        this.menus = null;
         this.palettes = null;
         this.wad = null;
         this.wipe = null;
@@ -73,12 +74,13 @@ class JSDoom
         this.palettes = new Palettes(this.wad);
         this.wipe = new Wipe();
         this.core = new Core();
+        this.menus = new Menus();
 
         this.core.setTimeout(0, performance.now());
 
         console.log("Started loop");
 
-        menu.init();
+        this.menus.initialize();
     }
 }
 
